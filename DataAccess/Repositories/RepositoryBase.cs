@@ -17,62 +17,41 @@ namespace DataAccess.Repositories
             dbSet = context.Set<T>();
         }
 
-        public void Add(T entity)
+        public async Task<T> AddAsync(T entity)
         {
             dbSet.Add(entity);
-            entity.CreatedAt = DateTime.Now;
-            _context.SaveChanges();
+            entity.CreatedAt = DateTime.UtcNow;
+            await _context.SaveChangesAsync();
+            return entity;
         }
 
-        public void AddRange(IEnumerable<T> entities)
+        public async Task<IEnumerable<T>> AddRangeAsync(IEnumerable<T> entities)
         {
             dbSet.AddRange(entities);
             foreach (var entity in entities)
             {
-                entity.CreatedAt = DateTime.Now;
+                entity.CreatedAt = DateTime.UtcNow;
             }
-            _context.SaveChanges();
+            await _context.SaveChangesAsync();
+            return entities;
         }
 
-        public T? GetById(Guid id, Func<IQueryable<T>, IIncludableQueryable<T, object>>? include = null)
+        public async Task<T?> GetByIdAsync(Guid id, Func<IQueryable<T>, IIncludableQueryable<T, object>>? include)
         {
-            var query = AddInclude(dbSet, include);
-            return query.FirstOrDefault(x => x.Id.Equals(id));
-        }
-
-        public async Task<T?> GetByIdAsync(Guid id, Func<IQueryable<T>, IIncludableQueryable<T, object>>? include = null)
-        {
-            var query = AddInclude(dbSet, include);
+            var query = AddInclude(dbSet.AsQueryable(), include);
             return await query.FirstOrDefaultAsync(x => x.Id.Equals(id));
         }
-
-        public IEnumerable<T> GetList(Expression<Func<T, bool>> predicate, Func<IQueryable<T>, IIncludableQueryable<T, object>>? include)
-        {
-            var query = AddInclude(dbSet, include);
-            return query.Where(predicate).ToList();
-        }
-
+        
         public async Task<IEnumerable<T>> GetListAsync(Expression<Func<T, bool>> predicate, Func<IQueryable<T>, IIncludableQueryable<T, object>>? include)
         {
-            var query = AddInclude(dbSet, include);
-            return await Task.Run(() => query.Where(predicate));
-        }
-
-        public IEnumerable<T> GetAll(Func<IQueryable<T>, IIncludableQueryable<T, object>>? include)
-        {
-            var query = AddInclude(dbSet, include);
-            return query.ToList();
+            var query = AddInclude(dbSet.AsQueryable(), include);
+            return await query.Where(predicate).ToListAsync();
         }
 
         public async Task<IEnumerable<T>> GetAllAsync(Func<IQueryable<T>, IIncludableQueryable<T, object>>? include)
         {
-            var query = AddInclude(dbSet, include);
-            return await Task.Run(() => query.ToListAsync());
-        }
-
-        public int Count()
-        {
-            return dbSet.Count();
+            var query = AddInclude(dbSet.AsQueryable(), include);
+            return await query.ToListAsync();
         }
 
         public async Task<int> CountAsync()
@@ -80,18 +59,19 @@ namespace DataAccess.Repositories
             return await dbSet.CountAsync();
         }
 
-        public void Update(T entity)
+        public async Task<T> UpdateAsync(T entity)
         {
             _context.Entry(entity).State = EntityState.Modified;
-            entity.ModifiedAt = DateTime.Now;
-            _context.SaveChanges();
+            entity.ModifiedAt = DateTime.UtcNow;
+            await _context.SaveChangesAsync();
+            return entity;
         }
 
-        public void Remove(T entity)
+        public async Task RemoveAsync(T entity)
         {
             _context.Entry(entity).State = EntityState.Modified;
-            entity.DeletedAt = DateTime.Now;
-            _context.SaveChanges();
+            entity.DeletedAt = DateTime.UtcNow;
+            await _context.SaveChangesAsync();
         }
 
         public void Dispose()
@@ -105,8 +85,29 @@ namespace DataAccess.Repositories
             {
                 query = include(query);
             }
-
             return query;
         }
+
+        #region Non-used
+        //public T? GetById(Guid id, Func<IQueryable<T>, IIncludableQueryable<T, object>>? include)
+        //{
+        //    var query = AddInclude(dbSet.AsQueryable(), include);
+        //    return query.FirstOrDefault(x => x.Id.Equals(id));
+        //}
+        //public IEnumerable<T> GetList(Expression<Func<T, bool>> predicate, Func<IQueryable<T>, IIncludableQueryable<T, object>>? include)
+        //{
+        //    var query = AddInclude(dbSet.AsQueryable(), include);
+        //    return query.Where(predicate).ToList();
+        //}
+        //public IEnumerable<T> GetAll(Func<IQueryable<T>, IIncludableQueryable<T, object>>? include)
+        //{
+        //    var query = AddInclude(dbSet.AsQueryable(), include);
+        //    return query.ToList();
+        //}
+        //public int Count()
+        //{
+        //    return dbSet.Count();
+        //}
+        #endregion
     }
 }

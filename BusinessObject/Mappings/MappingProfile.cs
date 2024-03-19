@@ -10,6 +10,7 @@ namespace BusinessObject.Mappings
         public MappingProfile()
         {
             CreateMap<ToDoItem, CreateToDoItemRequest>().ReverseMap();
+            CreateMap<ToDoItem, UpdateToDoItemRequest>().ReverseMap();
             CreateMap<ToDoItem, ToDoItemResponse>().ReverseMap();
 
             CreateMap<SubItem, CreateSubItemRequest>().ReverseMap();

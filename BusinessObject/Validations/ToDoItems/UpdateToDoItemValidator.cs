@@ -3,9 +3,9 @@ using FluentValidation;
 
 namespace BusinessObject.Validations.ToDoItems
 {
-    public class CreateToDoItemValidator : AbstractValidator<CreateToDoItemRequest>
+    public class UpdateToDoItemValidator : AbstractValidator<UpdateToDoItemRequest>
     {
-        public CreateToDoItemValidator()
+        public UpdateToDoItemValidator()
         {
             RuleFor(x => x.Title)
                 .NotEmpty().WithMessage("Title is required");

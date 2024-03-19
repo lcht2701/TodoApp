@@ -6,18 +6,20 @@ namespace DataAccess.Repositories
 {
     public interface IRepositoryBase<T> where T : class
     {
-        void Add(T entity);
-        void AddRange(IEnumerable<T> entities);
-        T? GetById(Guid id, Func<IQueryable<T>, IIncludableQueryable<T, object>>? include);
-        Task<T?> GetByIdAsync(Guid id, Func<IQueryable<T>, IIncludableQueryable<T, object>>? include);
-        IEnumerable<T> GetList(Expression<Func<T, bool>> predicate, Func<IQueryable<T>, IIncludableQueryable<T, object>>? include);
-        Task<IEnumerable<T>> GetListAsync(Expression<Func<T, bool>> predicate, Func<IQueryable<T>, IIncludableQueryable<T, object>>? include);
-        IEnumerable<T> GetAll(Func<IQueryable<T>, IIncludableQueryable<T, object>>? include);
-        Task<IEnumerable<T>> GetAllAsync(Func<IQueryable<T>, IIncludableQueryable<T, object>>? include);
-        int Count();
+        Task<T> AddAsync(T entity);
+        Task<IEnumerable<T>> AddRangeAsync(IEnumerable<T> entities);
+        Task<T?> GetByIdAsync(Guid id, Func<IQueryable<T>, IIncludableQueryable<T, object>>? include = null);
+        Task<IEnumerable<T>> GetListAsync(Expression<Func<T, bool>> predicate, Func<IQueryable<T>, IIncludableQueryable<T, object>>? include = null);
+        Task<IEnumerable<T>> GetAllAsync(Func<IQueryable<T>, IIncludableQueryable<T, object>>? include = null);
         Task<int> CountAsync();
-        void Update(T entity);
-        void Remove(T entity);
+        Task<T> UpdateAsync(T entity);
+        Task RemoveAsync(T entity);
         void Dispose();
+        #region Non-used
+        //T? GetById(Guid id, Func<IQueryable<T>, IIncludableQueryable<T, object>>? include = null);
+        //IEnumerable<T> GetList(Expression<Func<T, bool>> predicate, Func<IQueryable<T>, IIncludableQueryable<T, object>>? include = null);
+        //IEnumerable<T> GetAll(Func<IQueryable<T>, IIncludableQueryable<T, object>>? include = null);
+        //int Count(); 
+        #endregion
     }
 }

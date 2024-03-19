@@ -1,4 +1,6 @@
-﻿using System.Linq.Expressions;
+﻿using Microsoft.EntityFrameworkCore.Query;
+using System;
+using System.Linq.Expressions;
 
 namespace DataAccess.Repositories
 {
@@ -6,14 +8,12 @@ namespace DataAccess.Repositories
     {
         void Add(T entity);
         void AddRange(IEnumerable<T> entities);
-        T? GetById(int id);
-        Task<T?> GetByIdAsync(int id);
-        T? Get(Expression<Func<T, bool>> predicate);
-        Task<T?> GetAsync(Expression<Func<T, bool>> predicate);
-        IEnumerable<T> GetList(Expression<Func<T, bool>> predicate);
-        Task<IEnumerable<T>> GetListAsync(Expression<Func<T, bool>> predicate);
-        IEnumerable<T> GetAll();
-        Task<IEnumerable<T>> GetAllAsync();
+        T? GetById(Guid id, Func<IQueryable<T>, IIncludableQueryable<T, object>>? include);
+        Task<T?> GetByIdAsync(Guid id, Func<IQueryable<T>, IIncludableQueryable<T, object>>? include);
+        IEnumerable<T> GetList(Expression<Func<T, bool>> predicate, Func<IQueryable<T>, IIncludableQueryable<T, object>>? include);
+        Task<IEnumerable<T>> GetListAsync(Expression<Func<T, bool>> predicate, Func<IQueryable<T>, IIncludableQueryable<T, object>>? include);
+        IEnumerable<T> GetAll(Func<IQueryable<T>, IIncludableQueryable<T, object>>? include);
+        Task<IEnumerable<T>> GetAllAsync(Func<IQueryable<T>, IIncludableQueryable<T, object>>? include);
         int Count();
         Task<int> CountAsync();
         void Update(T entity);

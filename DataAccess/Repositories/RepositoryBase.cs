@@ -1,6 +1,7 @@
 ﻿using BusinessObject.Entities;
 using DataAccess.Context;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.EntityFrameworkCore.Query;
 using System.Linq.Expressions;
 
 namespace DataAccess.Repositories
@@ -33,44 +34,40 @@ namespace DataAccess.Repositories
             _context.SaveChanges();
         }
 
-        public T? GetById(int id)
+        public T? GetById(Guid id, Func<IQueryable<T>, IIncludableQueryable<T, object>>? include = null)
         {
-            return dbSet.Find(id);
+            var query = AddInclude(dbSet, include);
+            return query.FirstOrDefault(x => x.Id.Equals(id));
         }
 
-        public async Task<T?> GetByIdAsync(int id)
+        public async Task<T?> GetByIdAsync(Guid id, Func<IQueryable<T>, IIncludableQueryable<T, object>>? include = null)
         {
-            return await dbSet.FindAsync(id);
+            var query = AddInclude(dbSet, include);
+            return await query.FirstOrDefaultAsync(x => x.Id.Equals(id));
         }
 
-        public T? Get(Expression<Func<T, bool>> predicate)
+        public IEnumerable<T> GetList(Expression<Func<T, bool>> predicate, Func<IQueryable<T>, IIncludableQueryable<T, object>>? include)
         {
-            return dbSet.FirstOrDefault(predicate);
+            var query = AddInclude(dbSet, include);
+            return query.Where(predicate).ToList();
         }
 
-        public async Task<T?> GetAsync(Expression<Func<T, bool>> predicate)
+        public async Task<IEnumerable<T>> GetListAsync(Expression<Func<T, bool>> predicate, Func<IQueryable<T>, IIncludableQueryable<T, object>>? include)
         {
-            return await dbSet.FirstOrDefaultAsync(predicate);
+            var query = AddInclude(dbSet, include);
+            return await Task.Run(() => query.Where(predicate));
         }
 
-        public IEnumerable<T> GetList(Expression<Func<T, bool>> predicate)
+        public IEnumerable<T> GetAll(Func<IQueryable<T>, IIncludableQueryable<T, object>>? include)
         {
-            return dbSet.Where(predicate).ToList();
+            var query = AddInclude(dbSet, include);
+            return query.ToList();
         }
 
-        public async Task<IEnumerable<T>> GetListAsync(Expression<Func<T, bool>> predicate)
+        public async Task<IEnumerable<T>> GetAllAsync(Func<IQueryable<T>, IIncludableQueryable<T, object>>? include)
         {
-            return await Task.Run(() => dbSet.Where(predicate));
-        }
-
-        public IEnumerable<T> GetAll()
-        {
-            return dbSet.ToList();
-        }
-
-        public async Task<IEnumerable<T>> GetAllAsync()
-        {
-            return await Task.Run(() => dbSet.ToListAsync());
+            var query = AddInclude(dbSet, include);
+            return await Task.Run(() => query.ToListAsync());
         }
 
         public int Count()
@@ -100,6 +97,16 @@ namespace DataAccess.Repositories
         public void Dispose()
         {
             _context.Dispose();
+        }
+
+        private IQueryable<T> AddInclude(IQueryable<T> query, Func<IQueryable<T>, IIncludableQueryable<T, object>>? include)
+        {
+            if (include != null)
+            {
+                query = include(query);
+            }
+
+            return query;
         }
     }
 }

@@ -1,29 +1,34 @@
+using BusinessObject.Mappings;
+using BusinessObject.Validations.SubItems;
 using DataAccess.Context;
 using DataAccess.Repositories;
 using DataAccess.Services.Implements;
 using DataAccess.Services.Interfaces;
+using FluentValidation;
 using FluentValidation.AspNetCore;
 using Serilog;
-using System.Reflection;
 
 var builder = WebApplication.CreateBuilder(args);
 var services = builder.Services;
 var configuration = builder.Configuration;
 var corsPolicy = "CorsPolicy";
 
-Log.Logger = new LoggerConfiguration()
-            .MinimumLevel.Debug()
+var logger = new LoggerConfiguration()
+            .MinimumLevel.Information()
             .WriteTo.Console()
             .WriteTo.File("logs/ToDoApp-.txt", rollingInterval: RollingInterval.Day)
             .CreateLogger();
+builder.Logging.ClearProviders();
+builder.Logging.AddSerilog(logger);
 
 services.AddControllers();
-services.AddFluentValidationAutoValidation();
-services.AddFluentValidationClientsideAdapters();
-services.AddAutoMapper(Assembly.GetExecutingAssembly());
+services.AddFluentValidationAutoValidation()
+        .AddFluentValidationClientsideAdapters()
+        .AddValidatorsFromAssemblyContaining<CreateSubItemValidator>();
+services.AddAutoMapper(typeof(MappingProfile));
+services.AddDbContext<ApplicationDbContext>();
 services.AddEndpointsApiExplorer();
 services.AddSwaggerGen();
-services.AddDbContext<ApplicationDbContext>();
 
 #region Dependency Injection
 //Add Repository Base

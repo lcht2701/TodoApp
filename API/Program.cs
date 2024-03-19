@@ -1,5 +1,7 @@
 using DataAccess.Context;
 using DataAccess.Repositories;
+using DataAccess.Services.Implements;
+using DataAccess.Services.Interfaces;
 using FluentValidation.AspNetCore;
 using Serilog;
 using System.Reflection;
@@ -24,7 +26,13 @@ services.AddSwaggerGen();
 services.AddDbContext<ApplicationDbContext>();
 
 #region Dependency Injection
+//Add Repository Base
 services.AddScoped(typeof(IRepositoryBase<>), typeof(RepositoryBase<>));
+
+//Add Services
+services.AddScoped<IToDoItemService, ToDoItemService>();
+services.AddScoped<ISubItemService, SubItemService>();
+
 #endregion
 
 builder.Services.AddCors(options =>
@@ -47,6 +55,7 @@ if (app.Environment.IsDevelopment())
     app.UseSwaggerUI();
 }
 
+app.UseCors();
 app.UseHttpsRedirection();
 
 //app.UseAuthentication();

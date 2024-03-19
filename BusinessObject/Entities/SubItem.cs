@@ -5,7 +5,7 @@ namespace BusinessObject.Entities
 {
     public class SubItem : BaseEntity
     {
-        public Guid TaskId { get; set; }
+        public Guid ItemId { get; set; }
 
         public string? Title { get; set; }
 
@@ -15,7 +15,7 @@ namespace BusinessObject.Entities
 
         public Priority? Priority { get; set; }
 
-        [ForeignKey(nameof(TaskId))]
-        public ToDoItem? Task { get; set; }
+        [ForeignKey(nameof(ItemId))]
+        public ToDoItem? Item { get; set; }
     }
 }

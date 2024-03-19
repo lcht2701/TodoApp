@@ -2,10 +2,8 @@
 
 namespace BusinessObject.DTOs.SubItems
 {
-    public class CreateSubItemRequest
+    public class UpdateSubItemRequest
     {
-        public Guid TaskId { get; set; }
-
         public string? Title { get; set; }
 
         public string? Description { get; set; }

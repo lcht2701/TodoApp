@@ -42,13 +42,13 @@ namespace DataAccess.Repositories
             return await query.FirstOrDefaultAsync(x => x.Id.Equals(id));
         }
         
-        public async Task<IEnumerable<T>> GetListAsync(Expression<Func<T, bool>> predicate, Func<IQueryable<T>, IIncludableQueryable<T, object>>? include)
+        public async Task<IEnumerable<T>> GetAsync(Expression<Func<T, bool>> predicate, Func<IQueryable<T>, IIncludableQueryable<T, object>>? include)
         {
             var query = AddInclude(dbSet.AsQueryable(), include);
             return await query.Where(predicate).ToListAsync();
         }
 
-        public async Task<IEnumerable<T>> GetAllAsync(Func<IQueryable<T>, IIncludableQueryable<T, object>>? include)
+        public async Task<IEnumerable<T>> GetListAsync(Func<IQueryable<T>, IIncludableQueryable<T, object>>? include)
         {
             var query = AddInclude(dbSet.AsQueryable(), include);
             return await query.ToListAsync();

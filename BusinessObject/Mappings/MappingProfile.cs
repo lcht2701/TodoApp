@@ -14,6 +14,7 @@ namespace BusinessObject.Mappings
             CreateMap<ToDoItem, ToDoItemResponse>().ReverseMap();
 
             CreateMap<SubItem, CreateSubItemRequest>().ReverseMap();
+            CreateMap<SubItem, UpdateSubItemRequest>().ReverseMap();
             CreateMap<SubItem, SubItemResponse>().ReverseMap();
         }
     }

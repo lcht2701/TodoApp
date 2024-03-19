@@ -6,7 +6,7 @@ namespace BusinessObject.Entities
     {
         public ToDoItem()
         {
-            SubTasks = new HashSet<SubItem>();
+            SubItems = new HashSet<SubItem>();
         }
 
         public string? Title { get; set; }
@@ -21,6 +21,6 @@ namespace BusinessObject.Entities
 
         public DateTime? CompletedAt { get; set; }
 
-        public virtual ICollection<SubItem> SubTasks { get; set; }
+        public virtual ICollection<SubItem> SubItems { get; set; }
     }
 }

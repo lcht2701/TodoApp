@@ -6,6 +6,7 @@ using DataAccess.Services.Implements;
 using DataAccess.Services.Interfaces;
 using FluentValidation;
 using FluentValidation.AspNetCore;
+using Microsoft.EntityFrameworkCore;
 using Serilog;
 
 var builder = WebApplication.CreateBuilder(args);
@@ -26,7 +27,8 @@ services.AddFluentValidationAutoValidation()
         .AddFluentValidationClientsideAdapters()
         .AddValidatorsFromAssemblyContaining<CreateSubItemValidator>();
 services.AddAutoMapper(typeof(MappingProfile));
-services.AddDbContext<ApplicationDbContext>();
+services.AddDbContext<ApplicationDbContext>(option =>
+    option.UseSqlServer(configuration.GetConnectionString("ToDoAppDbString")));
 services.AddEndpointsApiExplorer();
 services.AddSwaggerGen();
 
@@ -52,6 +54,11 @@ builder.Services.AddCors(options =>
 });
 
 var app = builder.Build();
+using (var scope = app.Services.CreateScope())
+{
+    var db = scope.ServiceProvider.GetRequiredService<ApplicationDbContext>();
+    db.Database.Migrate();
+}
 
 // Configure the HTTP request pipeline.
 if (app.Environment.IsDevelopment())
@@ -60,7 +67,7 @@ if (app.Environment.IsDevelopment())
     app.UseSwaggerUI();
 }
 
-app.UseCors();
+app.UseCors(corsPolicy);
 app.UseHttpsRedirection();
 
 //app.UseAuthentication();

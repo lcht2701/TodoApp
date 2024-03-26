@@ -12,20 +12,7 @@ namespace DataAccess.Context
         }
 
         public virtual DbSet<ToDoItem>? TodoItems { get; set; }
-        public virtual DbSet<SubItem>? SubItems{ get; set; }
-
-        protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
-        {
-            if (!optionsBuilder.IsConfigured)
-            {
-                IConfigurationRoot configuration = new ConfigurationBuilder()
-                .SetBasePath(Directory.GetCurrentDirectory())
-                                       .AddJsonFile("appsettings.json")
-                                       .Build();
-                var connectionString = configuration.GetConnectionString("ToDoAppDbString");
-                optionsBuilder.UseSqlServer(connectionString);
-            }
-        }
+        public virtual DbSet<SubItem>? SubItems { get; set; }
 
         protected override void OnModelCreating(ModelBuilder builder)
         {

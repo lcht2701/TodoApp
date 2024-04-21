@@ -21,16 +21,17 @@ var logger = new LoggerConfiguration()
             .CreateLogger();
 builder.Logging.ClearProviders();
 builder.Logging.AddSerilog(logger);
-
 services.AddControllers();
-services.AddFluentValidationAutoValidation()
-        .AddFluentValidationClientsideAdapters()
-        .AddValidatorsFromAssemblyContaining<CreateSubItemValidator>();
 services.AddAutoMapper(typeof(MappingProfile));
 services.AddDbContext<ApplicationDbContext>(option =>
     option.UseSqlServer(configuration.GetConnectionString("ToDoAppDbString")));
 services.AddEndpointsApiExplorer();
 services.AddSwaggerGen();
+#region Fluent Validation
+services.AddFluentValidationAutoValidation()
+        .AddFluentValidationClientsideAdapters()
+        .AddValidatorsFromAssemblyContaining<CreateSubItemValidator>();
+#endregion
 
 #region Dependency Injection
 //Add Repository Base
@@ -70,7 +71,7 @@ if (app.Environment.IsDevelopment())
 app.UseCors(corsPolicy);
 app.UseHttpsRedirection();
 
-//app.UseAuthentication();
+app.UseAuthentication();
 app.UseAuthorization();
 
 app.MapControllers();

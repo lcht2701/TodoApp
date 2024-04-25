@@ -22,8 +22,8 @@ namespace API.Controllers
         [HttpGet]
         public async Task<IActionResult> Get()
         {
-            var result = await _toDoItemService.Get();
-            return CustomResult(result, HttpStatusCode.OK);
+            var result = await _toDoItemService.GetList();
+            return CustomResult("Get To Do List Successfully", result, HttpStatusCode.OK);
         }
 
         [HttpGet("{id}")]
@@ -32,7 +32,7 @@ namespace API.Controllers
             try
             {
                 var result = await _toDoItemService.GetById(id);
-                return CustomResult(result, HttpStatusCode.OK);  
+                return CustomResult(result, HttpStatusCode.OK);
             }
             catch (KeyNotFoundException)
             {
@@ -64,6 +64,24 @@ namespace API.Controllers
             try
             {
                 var result = await _toDoItemService.Update(id, request);
+                return CustomResult("To-do item updated successfully", result, HttpStatusCode.OK);
+            }
+            catch (KeyNotFoundException)
+            {
+                return CustomResult("Item is not found", HttpStatusCode.NotFound);
+            }
+            catch (Exception ex)
+            {
+                return CustomResult(ex.Message, HttpStatusCode.BadRequest);
+            }
+        }
+
+        [HttpPatch("{id}/is-done")]
+        public async Task<IActionResult> CheckIsDone(Guid id)
+        {
+            try
+            {
+                var result = await _toDoItemService.CheckIsDone(id);
                 return CustomResult("To-do item updated successfully", result, HttpStatusCode.OK);
             }
             catch (KeyNotFoundException)

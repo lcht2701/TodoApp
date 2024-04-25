@@ -1,5 +1,5 @@
 using BusinessObject.Mappings;
-using BusinessObject.Validations.SubItems;
+using BusinessObject.Validations.ToDoItems;
 using DataAccess.Context;
 using DataAccess.Repositories;
 using DataAccess.Services.Implements;
@@ -27,10 +27,11 @@ services.AddDbContext<ApplicationDbContext>(option =>
     option.UseSqlServer(configuration.GetConnectionString("ToDoAppDbString")));
 services.AddEndpointsApiExplorer();
 services.AddSwaggerGen();
+
 #region Fluent Validation
 services.AddFluentValidationAutoValidation()
         .AddFluentValidationClientsideAdapters()
-        .AddValidatorsFromAssemblyContaining<CreateSubItemValidator>();
+        .AddValidatorsFromAssemblyContaining<CreateToDoItemValidator>();
 #endregion
 
 #region Dependency Injection
@@ -39,8 +40,6 @@ services.AddScoped(typeof(IRepositoryBase<>), typeof(RepositoryBase<>));
 
 //Add Services
 services.AddScoped<IToDoItemService, ToDoItemService>();
-services.AddScoped<ISubItemService, SubItemService>();
-
 #endregion
 
 builder.Services.AddCors(options =>

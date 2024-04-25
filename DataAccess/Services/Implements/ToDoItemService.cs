@@ -9,17 +9,15 @@ namespace DataAccess.Services.Implements
     public class ToDoItemService : IToDoItemService
     {
         private readonly IRepositoryBase<ToDoItem> _toDoItemRepository;
-        private readonly ISubItemService _subItemService;
         private readonly IMapper _mapper;
 
-        public ToDoItemService(IRepositoryBase<ToDoItem> toDoItemRepository, ISubItemService subItemService, IMapper mapper)
+        public ToDoItemService(IRepositoryBase<ToDoItem> toDoItemRepository, IMapper mapper)
         {
             _toDoItemRepository = toDoItemRepository;
-            _subItemService = subItemService;
             _mapper = mapper;
         }
 
-        public async Task<IEnumerable<ToDoItemResponse>> Get()
+        public async Task<IEnumerable<ToDoItemResponse>> GetList()
         {
             var items = await _toDoItemRepository.GetListAsync();
             return _mapper.Map<IEnumerable<ToDoItemResponse>>(items);
@@ -28,15 +26,15 @@ namespace DataAccess.Services.Implements
         public async Task<ToDoItemResponse> GetById(Guid id)
         {
             var target = await _toDoItemRepository.GetByIdAsync(id) ?? throw new KeyNotFoundException();
-            var subItems = await _subItemService.GetByItem(target.Id);
             var result = _mapper.Map<ToDoItemResponse>(target);
-            result.SubItems = subItems;
             return result;
         }
 
         public async Task<ToDoItemResponse> Add(CreateToDoItemRequest request)
         {
-            var result = await _toDoItemRepository.AddAsync(_mapper.Map<ToDoItem>(request));
+            var entity = _mapper.Map<ToDoItem>(request);
+            entity.IsDone = false;
+            var result = await _toDoItemRepository.AddAsync(entity);
             return _mapper.Map<ToDoItemResponse>(result);
         }
 
@@ -45,6 +43,14 @@ namespace DataAccess.Services.Implements
             var target = await _toDoItemRepository.GetByIdAsync(id) ?? throw new KeyNotFoundException();
             var entity = _mapper.Map(request, target);
             var result = await _toDoItemRepository.UpdateAsync(entity);
+            return _mapper.Map<ToDoItemResponse>(result);
+        }
+
+        public async Task<ToDoItemResponse> CheckIsDone(Guid id)
+        {
+            var target = await _toDoItemRepository.GetByIdAsync(id) ?? throw new KeyNotFoundException();
+            target.IsDone = !target.IsDone;
+            var result = await _toDoItemRepository.UpdateAsync(target);
             return _mapper.Map<ToDoItemResponse>(result);
         }
 

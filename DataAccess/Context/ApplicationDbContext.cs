@@ -1,7 +1,5 @@
 ﻿using BusinessObject.Entities;
 using Microsoft.EntityFrameworkCore;
-using Microsoft.Extensions.Configuration;
-using System.Reflection;
 
 namespace DataAccess.Context
 {
@@ -12,7 +10,6 @@ namespace DataAccess.Context
         }
 
         public virtual DbSet<ToDoItem>? TodoItems { get; set; }
-        public virtual DbSet<SubItem>? SubItems { get; set; }
 
         protected override void OnModelCreating(ModelBuilder builder)
         {
